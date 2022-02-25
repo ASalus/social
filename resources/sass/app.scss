@@ -1,0 +1,36 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+//FontAwesome
+$fa-font-path:"../webfonts";
+
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+
+//AdminLTE
+@import '~admin-lte/dist/css/adminlte.css';
+@import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "~@fortawesome/fontawesome-free/scss/solid.scss";
+@import "~@fortawesome/fontawesome-free/scss/brands.scss";
+@import "~@fortawesome/fontawesome-free/scss/regular.scss";
+
+
+.nav-badge{
+    font-size: 70% !important;
+    color: #fff;
+    position: absolute;
+    right: 0px;
+    top: 20px;
+}
+
+
+.content-wrapper.kanban .content {
+    overflow: auto !important;
+}
+
+.content-wrapper .kanban{
+    margin-left: 0px !important;
+}

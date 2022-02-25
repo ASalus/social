@@ -1,0 +1,100 @@
+/* Tailwind */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+.tw-search-container{
+    @apply hidden pt-0 md:pt-0 md:block w-full md:w-1/2 max-w-md mx-auto md:ml-auto
+};
+
+.tw-user-container{
+    @apply px-4 mx-auto flex flex-wrap items-center justify-between
+};
+
+.tw-search-input{
+    @apply block w-full focus:outline-none focus:bg-white focus:shadow text-gray-700 font-bold rounded-lg pl-12 pr-4 py-3;
+}
+
+.tw-navbar-right{
+    @apply lg:flex flex-grow items-center lg:bg-transparent lg:shadow-none hidden
+};
+
+.tw-navbar-link{
+    @apply lg:text-white lg:hover:text-blueGray-200 text-blueGray-700 px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold
+};
+
+.tw-navbar-link-image{
+    @apply lg:text-blueGray-200 text-lg lg:hover:text-blueGray-700
+};
+
+
+.profile-lower-section{
+    @apply relative py-16 bg-blueGray-100
+}
+
+.profile-lower-section .container .tw-profile-container{
+    @apply relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-xl rounded-lg -mt-64
+};
+
+.tw-profile-pic{
+    @apply shadow-xl rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16
+};
+
+
+.tw-profile-header-button{
+    @apply bg-blue-500 active:bg-blue-600 uppercase text-white font-bold hover:shadow-md shadow text-xs px-4 py-2 rounded outline-none focus:outline-none sm:mr-2 mb-1 ease-linear transition-all duration-150
+};
+
+.tw-profile-stats-span{
+    @apply text-xl font-bold block uppercase tracking-wide text-blueGray-600
+};
+
+.tw-profile-user-name{
+    @apply text-4xl font-semibold leading-normal mb-2 text-blueGray-700 mb-2
+};
+
+.tw-profile-user-loc{
+    @apply text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase
+};
+
+.tw-profile-info-image{
+    @apply mr-2 text-lg text-blueGray-400
+}
+
+.tw-profile-about-container{
+    @apply mt-10 py-5 border-t border-blueGray-200 text-center
+};
+
+.tw-profile-about{
+    @apply mb-4 text-lg leading-relaxed text-blueGray-700
+};
+
+.tw-profile-posts-container{
+    @apply mt-2 py-5 border-t border-blueGray-200 text-center
+};
+
+.tw-post-auth-ad{
+    @apply text-sm leading-5 font-medium text-gray-500 transition ease-in-out duration-150
+};
+
+.tw-post-text{
+    @apply text-base font-medium text-blueGray-700 flex-shrink text-left
+};
+
+.tw-new-post-links{
+    @apply mt-1 flex items-center text-blue-400 px-2 py-2 text-base leading-6 font-medium rounded-full hover:bg-blue-800 hover:text-blue-300 cursor-pointer
+};
+
+.tw-post-links{
+    @apply w-12 mt-1 flex items-center text-gray-500 px-3 py-2 text-base leading-6 font-medium rounded-full hover:bg-blue-800 hover:text-blue-300 cursor-pointer
+};
+
+.tw-new-post-submit-btn{
+    @apply bg-blue-400 mt-5 hover:bg-blue-600 text-white font-bold py-2 px-8 rounded-full mr-8 float-right disabled:hover:bg-blue-300 disabled:bg-blue-300
+};
+
+.tw-post-image-preview{
+    @apply content-center
+};
