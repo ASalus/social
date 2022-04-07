@@ -9,9 +9,9 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function profile($id)
+    public function profile($username)
     {
-        $user = User::find($id);
+        $user = User::where('username', $username)->firstOrFail();
         return view('userPages.profile', ['data' => $user]);
     }
 }

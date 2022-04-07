@@ -11,6 +11,9 @@
         <li class="nav-item d-none d-sm-inline-block">
             <a href="{{ route('admin.contacts') }}" class="nav-link">Contact</a>
         </li>
+        <li class="nav-item d-none d-sm-inline-block">
+            <a href="/" class="nav-link">Profile</a>
+        </li>
     </ul>
 
     <!-- Right navbar links -->

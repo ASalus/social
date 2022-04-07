@@ -22,11 +22,11 @@
 };
 
 .tw-navbar-link{
-    @apply lg:text-white lg:hover:text-blueGray-200 text-blueGray-700 px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold
+    @apply lg:text-white lg:hover:text-blueGray-200 text-blueGray-500 px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold
 };
 
 .tw-navbar-link-image{
-    @apply lg:text-blueGray-200 text-lg lg:hover:text-blueGray-700
+    @apply lg:text-blueGray-200 text-lg lg:hover:text-blueGray-500
 };
 
 
@@ -39,7 +39,7 @@
 };
 
 .tw-profile-pic{
-    @apply shadow-xl rounded-full h-auto align-middle border-none absolute -m-16 -ml-20 lg:-ml-16
+    @apply shadow-xl rounded-full align-middle border-none absolute -m-16 -ml-20 lg:-ml-16
 };
 
 
@@ -88,7 +88,7 @@
 };
 
 .tw-post-links{
-    @apply w-12 mt-1 flex items-center text-gray-500 px-3 py-2 text-base leading-6 font-medium rounded-full hover:bg-blue-800 hover:text-blue-300 cursor-pointer
+    @apply w-12 mt-1 flex items-center px-3 py-2 text-base leading-6 font-medium rounded-full cursor-pointer
 };
 
 .tw-new-post-submit-btn{

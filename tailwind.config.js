@@ -3,7 +3,10 @@ module.exports = {
         './public/index.html',
         './resources/**/*.blade.php',
         './resources/views/**/*.blade.php',
+        './vendor/wire-elements/modal/resources/views/*.blade.php',
+        './storage/framework/views/*.php',
     ],
+    darkMode: false, // or 'media' or 'class'
     theme: {
         extend: {
             colors: {

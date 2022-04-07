@@ -28,6 +28,10 @@ Route::get('/', function () {
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+Route::get('test', function () {
+    return view('test');
+})->name('test');
+
 
 Route::group(
     [
@@ -81,6 +85,6 @@ Route::group(
 
 Route::controller(UserUserController::class)->prefix('users')->as('user.')->group(
     function () {
-        Route::get('/{id}', 'profile')->name('profile');
+        Route::get('/{username}', 'profile')->name('profile');
     }
 );

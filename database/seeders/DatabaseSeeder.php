@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,6 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        // \App\Models\User::factory(1)->create();
+        Role::factory()->create([
+            'role_name' => 'Admin'
+        ]);
+        Role::factory()->create([
+            'role_name' => 'User'
+        ]);
+        $this->call('ImportCoutiesTable');
+        $this->command->info('Countries tables seeded!');
     }
 }

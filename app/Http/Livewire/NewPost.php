@@ -3,6 +3,8 @@
 namespace App\Http\Livewire;
 
 use App\Models\Post;
+use App\Models\Post\PostStat;
+use App\Models\User;
 use ArrayObject;
 use Dotenv\Parser\Value;
 use GuzzleHttp\Psr7\AppendStream;
@@ -27,6 +29,10 @@ class NewPost extends Component
         'imageInput.*' => 'image|max:1024',
     ];
 
+    protected $listeners = [
+        'refreshPosts' => '$refresh',
+    ];
+
     protected $messages = [
         'postText.required' => 'The post cannot be empty.',
         'postText.min' => 'To short.',
@@ -39,7 +45,10 @@ class NewPost extends Component
 
         $i = 1;
         $filenames= new ArrayObject();
-        $last_id = DB::table('posts')->latest('id')->first()->id;
+        $last_id = 0;
+        if(DB::table('posts')->count() !== 0){
+            $last_id = DB::table('posts')->latest('id')->first()->id;
+        }
         foreach ($this->images as $image) {
             $path = 'images/users/'.auth()->user()->username.'/posts/'. $last_id+1;
             $filenames->append($path.'/'. $i. '.jpg');
@@ -51,21 +60,37 @@ class NewPost extends Component
             $i +=1;
         }
 
-
         $post = Post::create([
             'user_id' => auth()->user()->id,
             'full_text' => $this->postText,
             'image' => json_encode($filenames),
         ]);
 
+        PostStat::create([
+            'post_id' => $post->id,
+        ]);
+
+        $this->reset('postText');
         $this->emit('refreshPosts', $post);
-        $this->reset();
     }
 
     public function mount($data)
     {
 
         $this->avatar = $data->userInfo->avatar;
+        $this->mentionables = User::all()->load('userInfo')
+            ->map(function ($user) {
+                return [
+                    'key' => $user->name,
+                    'value' => $user->username,
+                    'image' => $user->userInfo->avatar
+                ];
+            });
+    }
+
+    public function deleteImage($id)
+    {
+        array_splice($this->images, $id, 1);
     }
 
     public function updatedImageInput()
@@ -79,4 +104,5 @@ class NewPost extends Component
     {
         return view('livewire.new-post');
     }
+
 }
