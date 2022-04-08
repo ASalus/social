@@ -36,3 +36,22 @@ $fa-font-path:"../webfonts";
 .content-wrapper .kanban{
     margin-left: 0px !important;
 }
+
+.tribute-demo-input {
+    outline: none;
+    border: 1px solid #eee;
+    padding: 3px 5px;
+    border-radius: 2px;
+    font-size: 15px;
+    min-height: 32px;
+    cursor: text;
+  }
+  .tribute-demo-input:focus {
+    border-color: #d1d1d1;
+    background-color: #fbfbfb;
+  }
+  [contenteditable="true"]:empty:before {
+    content: attr(placeholder);
+    display: block;
+    color: #ccc;
+  }

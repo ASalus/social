@@ -7,18 +7,10 @@
                 <div class="m-2 w-10 py-1">
                     <img class="inline-block h-10 w-10 rounded-full" src="{{ asset('storage/' . $avatar) }}" alt="">
                 </div>
-                <div class="flex-1 px-2 pt-2 mt-2" x-data x-init='
-                    ()=> {
-                        let tribute = new Tribute({
-                            trigger: "@",
-                            values: @json($mentionables)
-                        });
-                        tribute.attach($refs.textarea);
-                    }
-                    ' wire:ignore>
-                    <textarea wire:ignore class="editor bg-transparent text-gray-400 font-medium text-lg w-full" rows="4"
-                        placeholder="What's happening?" name='postText'
-                        wire:model='postText'>{!! $postText !!}</textarea>
+                <div class="flex-1 px-2 pt-2 mt-2">
+                    <p id="testMultiple"
+                        class="text-left bg-transparent text-gray-400 font-medium text-lg w-full overflow-y-auto h-28"
+                        placeholder="What's happening?" @click='$wire.postText = $el.outerHTML' wire:ignore></p>
                     {{-- @error('postText') <span class="error">{{ $message }}</span> @enderror --}}
                     <ul wire:ignore id="gallery" class="flex flex-1 flex-wrap -m-1">
                         <li id="empty" class="h-full w-full text-center flex flex-col justify-center ">
@@ -304,15 +296,6 @@
             gallery.append(empty);
         };
 
-        // clear entire selection
-        // document.getElementById("cancel").onclick = () => {
-        //     while (gallery.children.length > 0) {
-        //         gallery.lastChild.remove();
-        //     }
-        //     FILES = {};
-        //     empty.classList.remove("hidden");
-        //     gallery.append(empty);
-        // };
     </script>
 
     <style>
@@ -343,4 +326,80 @@
         }
 
     </style>
+    <script>
+        var tributeMultipleTriggers = new Tribute({
+            collection: [{
+                    // The function that gets call on select that retuns the content to insert
+                    selectTemplate: function(item) {
+                        if (this.range.isContentEditable(this.current.element)) {
+                            return (
+                                '<a href="/users/' + item.original.key + '" title="' +
+                                item.original.value +
+                                '" class="text-blue-600">@' +
+                                item.original.key +
+                                "</a>"
+                            );
+                        }
+
+                        return "@" + item.original.value;
+                    },
+                    menuItemTemplate: function(item) {
+                        return '<img class="w-4 h-4 object-cover rounded-full" src="/storage/' + item
+                            .original.image + '">' + item.string;
+                    },
+                    noMatchTemplate: function() {
+                        return null;
+                    },
+
+                    // the array of objects
+                    values: @json($mentionables)
+                },
+                {
+                    // The symbol that starts the lookup
+                    trigger: "#",
+
+                    // The function that gets call on select that retuns the content to insert
+                    selectTemplate: function(item) {
+                        if (this.range.isContentEditable(this.current.element)) {
+                            return (
+                                '<a href="mailto:' +
+                                item.original.email +
+                                '">#' +
+                                item.original.name.replace() +
+                                "</a>"
+                            );
+                        }
+
+                        return "#" + item.original.name;
+                    },
+
+                    // function retrieving an array of objects
+                    values: [{
+                            name: "Bob Bill",
+                            email: "bobbill@example.com"
+                        },
+                        {
+                            name: "Steve Stevenston",
+                            email: "steve@example.com"
+                        }
+                    ],
+
+                    lookup: "name",
+
+                    fillAttr: "name",
+                }
+            ],
+            noMatchTemplate: function(item) {
+                if (this.current.collection.trigger === "#") {
+                    return "<li class = 'noMatches'>No matches found - Tag will be added</li>";
+                } else if (this.current.collection.trigger === "@") {
+                    return "<li class = 'noMatches'>No matches found</li>";
+                }
+            }
+        })
+        document.getElementById("testMultiple").oninput = () => {
+            console.log($('#testMultiple').text());
+        };
+        tributeMultipleTriggers.attach(document.getElementById("testMultiple"));
+    </script>
 </div>

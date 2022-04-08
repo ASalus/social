@@ -17,6 +17,7 @@ class NewPost extends Component
     use WithFileUploads;
 
     public $postText;
+    public $tags = [];
     // public $category;
     public $imageInput = [];
     public $avatar;
@@ -81,8 +82,8 @@ class NewPost extends Component
         $this->mentionables = User::all()->load('userInfo')
             ->map(function ($user) {
                 return [
-                    'key' => $user->name,
-                    'value' => $user->username,
+                    'key' => $user->username,
+                    'value' => $user->name,
                     'image' => $user->userInfo->avatar
                 ];
             });
@@ -98,6 +99,11 @@ class NewPost extends Component
         foreach ($this->imageInput as $image) {
             array_push($this->images, $image);
         }
+    }
+
+    public function addTag($tag)
+    {
+        $this->tags = array_push($this->tags, $tag);
     }
 
     public function render()
