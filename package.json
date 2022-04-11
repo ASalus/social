@@ -1,5 +1,6 @@
 {
     "private": true,
+
     "scripts": {
         "dev": "npm run development",
         "development": "mix",
@@ -13,6 +14,10 @@
         "@alpine-collective/toolkit-range": "^1.0.0",
         "@alpine-collective/toolkit-scroll": "^1.0.0",
         "@alpine-collective/toolkit-truncate": "^1.0.0",
+        "@babel/cli": "^7.17.6",
+        "@babel/core": "^7.17.9",
+        "@babel/node": "^7.16.8",
+        "@babel/preset-env": "^7.16.11",
         "@popperjs/core": "^2.10.2",
         "autoprefixer": "^10.4.2",
         "axios": "^0.25",
@@ -28,8 +33,9 @@
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.0.0",
-        "admin-lte": "3.2",
+        "admin-lte": "^3.0.5",
         "alpinejs": "3.9.0",
+        "autolinker": "^3.15.0",
         "tributejs": "^5.1.3"
     }
 }

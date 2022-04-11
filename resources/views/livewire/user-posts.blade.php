@@ -28,7 +28,7 @@
                     </div>
                     <div class="pl-16">
                         <p class="ml-3 width-auto tw-post-text">
-                            {{ $post->full_text }}
+                            {!! $post->full_text !!}
                         </p>
                         <div class="flex flex-wrap justify-center">
                             @if ($post->image)

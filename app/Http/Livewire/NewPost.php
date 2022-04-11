@@ -26,7 +26,7 @@ class NewPost extends Component
     public $data;
 
     protected $rules = [
-        'postText' => 'required|min:1|max:255',
+        'postText' => 'required|min:1|max:512',
         'imageInput.*' => 'image|max:1024',
     ];
 
@@ -45,20 +45,20 @@ class NewPost extends Component
         $this->validate();
 
         $i = 1;
-        $filenames= new ArrayObject();
+        $filenames = new ArrayObject();
         $last_id = 0;
-        if(DB::table('posts')->count() !== 0){
+        if (DB::table('posts')->count() !== 0) {
             $last_id = DB::table('posts')->latest('id')->first()->id;
         }
         foreach ($this->images as $image) {
-            $path = 'images/users/'.auth()->user()->username.'/posts/'. $last_id+1;
-            $filenames->append($path.'/'. $i. '.jpg');
+            $path = 'images/users/' . auth()->user()->username . '/posts/' . $last_id + 1;
+            $filenames->append($path . '/' . $i . '.jpg');
             //dd(json_encode($filenames));
             $image->storeAs(
-                'public/'.$path,
-                $i.'.jpg'
+                'public/' . $path,
+                $i . '.jpg'
             );
-            $i +=1;
+            $i += 1;
         }
 
         $post = Post::create([
@@ -110,5 +110,4 @@ class NewPost extends Component
     {
         return view('livewire.new-post');
     }
-
 }

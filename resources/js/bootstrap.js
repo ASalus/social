@@ -1,5 +1,8 @@
-
 window._ = require('lodash');
+
+const { default: Autolinker } = require('autolinker');
+
+
 
 try {
 
@@ -8,6 +11,7 @@ try {
 
     require('bootstrap');
     require('admin-lte');
+    window.Autolinker = Autolinker;
 
 } catch (e) {}
 
