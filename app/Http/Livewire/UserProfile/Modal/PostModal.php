@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\UserProfile\Modal;
 
 use App\Models\Post;
+use App\Models\Post\UserPostStat;
 use LivewireUI\Modal\ModalComponent;
 
 class PostModal extends ModalComponent

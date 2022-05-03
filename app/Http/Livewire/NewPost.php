@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Models\Post;
 use App\Models\Post\PostStat;
+use App\Models\Post\Tag;
 use App\Models\User;
 use ArrayObject;
 use Dotenv\Parser\Value;
@@ -16,9 +17,9 @@ class NewPost extends Component
 {
     use WithFileUploads;
 
-    public $postText;
-    public $tags = [];
-    // public $category;
+    public $postText = '';
+    public $postTags = [];
+    public $mentions = [];
     public $imageInput = [];
     public $avatar;
     public $isDisabled = true;
@@ -26,7 +27,6 @@ class NewPost extends Component
     public $data;
 
     protected $rules = [
-        'postText' => 'required|min:1|max:512',
         'imageInput.*' => 'image|max:1024',
     ];
 
@@ -36,8 +36,6 @@ class NewPost extends Component
 
     protected $messages = [
         'postText.required' => 'The post cannot be empty.',
-        'postText.min' => 'To short.',
-        'postText.max' => 'To big.',
     ];
 
     public function store()
@@ -60,25 +58,32 @@ class NewPost extends Component
             );
             $i += 1;
         }
-
         $post = Post::create([
             'user_id' => auth()->user()->id,
             'full_text' => $this->postText,
             'image' => json_encode($filenames),
+            'mentions' => json_encode((object) $this->mentions),
+            'tags' => json_encode((object) $this->postTags)
         ]);
 
         PostStat::create([
             'post_id' => $post->id,
         ]);
 
-        $this->reset('postText');
+        foreach ($this->postTags as $tag) {
+            Tag::firstOrCreate([
+                'tag' => $tag,
+            ]);
+        }
+
+        $this->reset('postText', 'images', 'imageInput');
         $this->emit('refreshPosts', $post);
     }
 
-    public function mount($data)
+    public function mount()
     {
 
-        $this->avatar = $data->userInfo->avatar;
+        $this->avatar = auth()->user()->userInfo->avatar;
         $this->mentionables = User::all()->load('userInfo')
             ->map(function ($user) {
                 return [
@@ -87,6 +92,12 @@ class NewPost extends Component
                     'image' => $user->userInfo->avatar
                 ];
             });
+        $this->tags = Tag::all()->map(function ($tag) {
+            return [
+                'key' => $tag->id,
+                'value' => $tag->tag,
+            ];
+        });
     }
 
     public function deleteImage($id)
@@ -99,11 +110,6 @@ class NewPost extends Component
         foreach ($this->imageInput as $image) {
             array_push($this->images, $image);
         }
-    }
-
-    public function addTag($tag)
-    {
-        $this->tags = array_push($this->tags, $tag);
     }
 
     public function render()

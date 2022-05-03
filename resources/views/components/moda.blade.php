@@ -13,9 +13,9 @@
                     @endif
                 </div>
                 <div class="bg-white px-4 sm:p-6">
-                    <div class="space-y-6">
+                    {{-- <div class="space-y-6"> --}}
                         {{ $content }}
-                    </div>
+                    {{-- </div> --}}
                 </div>
 
                 <div class="bg-white p-4 sm:px-6 sm:py-4 border-t border-gray-150">

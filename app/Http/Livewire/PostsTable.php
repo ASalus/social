@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,6 +37,22 @@ final class PostsTable extends PowerGridComponent
             ->showExportOption('download', ['excel', 'csv']);
     }
 
+    protected function getListeners(): array
+    {
+        return array_merge(
+            parent::getListeners(),
+            [
+                'deletePost' => 'deletePost'
+            ]
+        );
+    }
+
+    public function deletePost($id)
+    {
+        Post::destroy($id);
+        $this->emit('$refresh');
+    }
+
     /*
     |--------------------------------------------------------------------------
     |  Datasource
@@ -45,7 +62,9 @@ final class PostsTable extends PowerGridComponent
     */
     public function datasource(): ?Builder
     {
-        return Post::query();
+        return Post::query()
+            ->join('users', 'posts.user_id', '=', 'users.id')
+            ->select('posts.*', 'users.name as user');
     }
 
     /*
@@ -63,7 +82,11 @@ final class PostsTable extends PowerGridComponent
      */
     public function relationSearch(): array
     {
-        return [];
+        return [
+            'user' => [
+                'name'
+            ]
+        ];
     }
 
     /*
@@ -78,14 +101,15 @@ final class PostsTable extends PowerGridComponent
     {
         return PowerGrid::eloquent()
             ->addColumn('id')
-            ->addColumn('user_id')
-            ->addColumn('category_id')
-            ->addColumn('full_text')
-            ->addColumn('created_at_formatted', function(Post $model) {
-                return Carbon::parse($model->created_at)->format('d/m/Y H:i:s');
+            ->addColumn('user')
+            ->addColumn('full_text', function (Post $model) {
+                return strip_tags($model->full_text);
             })
-            ->addColumn('updated_at_formatted', function(Post $model) {
-                return Carbon::parse($model->updated_at)->format('d/m/Y H:i:s');
+            ->addColumn('created_at_formatted', function (Post $model) {
+                return Carbon::parse($model->created_at)->format('d/m/Y');
+            })
+            ->addColumn('updated_at_formatted', function (Post $model) {
+                return Carbon::parse($model->updated_at)->format('d/m/Y');
             });
     }
 
@@ -98,7 +122,7 @@ final class PostsTable extends PowerGridComponent
     |
     */
 
-     /**
+    /**
      * PowerGrid Columns.
      *
      * @return array<int, Column>
@@ -112,20 +136,15 @@ final class PostsTable extends PowerGridComponent
                 ->makeInputRange(),
 
             Column::add()
-                ->title('USER ID')
-                ->field('user_id')
-                ->makeInputRange(),
+                ->title('USER')
+                ->field('user')
+                ->makeInputText('name')
+                ->sortable(),
 
             Column::add()
-                ->title('CATEGORY ID')
-                ->field('category_id')
-                ->makeInputRange(),
-
-            Column::add()
+                ->bodyAttribute('')
                 ->title('FULL TEXT')
-                ->field('full_text')
-                ->sortable()
-                ->searchable(),
+                ->field('full_text'),
 
             Column::add()
                 ->title('CREATED AT')
@@ -140,10 +159,9 @@ final class PostsTable extends PowerGridComponent
                 ->searchable()
                 ->sortable()
                 ->makeInputDatePicker('updated_at'),
-
-        ]
-;
+        ];
     }
+
 
     /*
     |--------------------------------------------------------------------------
@@ -153,26 +171,19 @@ final class PostsTable extends PowerGridComponent
     |
     */
 
-     /**
+    /**
      * PowerGrid Post Action Buttons.
      *
      * @return array<int, \PowerComponents\LivewirePowerGrid\Button>
      */
 
-
     public function actions(): array
     {
-       return [
-           Button::add('edit')
-               ->caption('Edit')
-               ->class('bg-indigo-500 cursor-pointer text-white px-3 py-2.5 m-1 rounded text-sm')
-               ->route('admin.post.edit', ['id' => 'id']),
-
-           Button::add('destroy')
-               ->caption('Delete')
-               ->class('bg-red-500 cursor-pointer text-white px-3 py-2 m-1 rounded text-sm')
-               ->route('admin.post.delete', ['id' => 'id'])
-               ->method('post')
+        return [
+            Button::add('destroy')
+                ->caption('Delete')
+                ->class('bg-red cursor-pointer text-white px-2 py-2 m-1 rounded text-sm')
+                ->emit('deletePost', ['id' => 'id'])
         ];
     }
 
@@ -184,7 +195,7 @@ final class PostsTable extends PowerGridComponent
     |
     */
 
-     /**
+    /**
      * PowerGrid Post Action Rules.
      *
      * @return array<int, \PowerComponents\LivewirePowerGrid\Rules\Rule>
@@ -212,7 +223,7 @@ final class PostsTable extends PowerGridComponent
     |
     */
 
-     /**
+    /**
      * PowerGrid Post Update.
      *
      * @param array<string,string> $data

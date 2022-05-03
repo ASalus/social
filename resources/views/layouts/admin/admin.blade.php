@@ -4,15 +4,21 @@ This is a starter template page. Use this page to start your new project from
 scratch. This page gets rid of all links and provides the needed markup only.
 -->
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Panel</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-
+    @stack('styles')
     @livewireStyles
     @powerGridStyles
+    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    <script src="{{ mix('js/app.js') }}" defer></script>
+    @stack('scripts')
+    @livewireScripts
+    @powerGridScripts
 </head>
+
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
 
@@ -50,9 +56,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- REQUIRED SCRIPTS -->
 
     <!-- jQuery -->
-    <script src="{{ asset('js/app.js') }}"></script>
-    @stack('scripts')
-    @livewireScripts
-    @powerGridScripts
 </body>
+@livewire('livewire-ui-modal')
+
 </html>

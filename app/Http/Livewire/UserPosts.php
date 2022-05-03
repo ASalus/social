@@ -22,7 +22,7 @@ class UserPosts extends Component
     public $commentsCount;
 
     protected $listeners = [
-        'refreshPosts' => '$refresh',
+        'refreshPosts' => 'render',
     ];
 
     public function loadMore()
@@ -30,47 +30,23 @@ class UserPosts extends Component
         $this->loadAmount += 5;
     }
 
-
-
-    public function resendClick(Post $post)
-    {
-
-        $userPostStat = UserPostStat::firstOrCreate([
-            'post_id' => $post->id,
-            'user_id' => auth()->user()->id,
-        ]);
-        if($userPostStat->resend == false)
-        {
-            $userPostStat->resend = true;
-            $post->stats->resend += 1;
-        }
-        else
-        {
-            $userPostStat->resend = false;
-            $post->stats->resend -= 1;
-        }
-        $userPostStat->save();
-        $post->stats->save();
-        $this->emit('$refresh');
-    }
-
-    public function openPostModal(Post $post)
-    {
-        return $post->image != '{}'
-            ? $this->emit('openModal', 'user-profile.modal.image-post-modal', ['post' => $post->id])
-            : $this->emit('openModal', 'user-profile.modal.post-modal', ['post' => $post->id]);
-    }
-
     public function mount(User $user)
     {
-        $this->user = $user->load('userInfo');
+        $this->user = $user->load('userInfo', 'userPostStat', 'userPostStat.post');
+        $this->reposted = $user->userPostStat->map(function ($value) {
+            return $value->post;
+        });
         $this->totalPosts = $user->posts->count();
     }
 
     public function render()
     {
-        return view('livewire.user-posts',[
-            'posts' => $this->user->posts->where('to_post', false)->load('postsToPost', 'stats')->sortByDesc('created_at')->take($this->loadAmount)
+        return view('livewire.user-posts', [
+            'posts' => $this->user->posts
+                ->where('to_post', false)
+                ->merge($this->reposted)
+                ->load('postsToPost', 'stats', 'user', 'user.userInfo', 'userPostStat')
+                ->sortByDesc('created_at')->take($this->loadAmount)
         ]);
     }
 }

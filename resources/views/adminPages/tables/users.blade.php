@@ -2,13 +2,11 @@
 
 @section('title', 'Users')
 @section('action')
-<button class="create btn btn-dark float-right" id="createButton">New User</button>
+    @livewire('admin.components.button-modal', ['modal' => 'admin.new-user'])
 @endsection
 
 @section('content')
-<div>
-    <livewire:users-table/>
-</div>
+    <div>
+        <livewire:users-table />
+    </div>
 @endsection
-
-

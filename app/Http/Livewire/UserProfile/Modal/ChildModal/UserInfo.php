@@ -45,7 +45,7 @@ class UserInfo extends ModalComponent
     {
         $this->country = Country::where('id', $id)->get(['id', 'name', 'iso2'])->first();
         $arrayState = State::where('country_id', $this->country->id)->get(['id', 'name'])->toArray();
-        if($arrayState){
+        if ($arrayState) {
             $this->states = $this->getArray($arrayState, 'name', 'id');
         }
     }
@@ -54,8 +54,7 @@ class UserInfo extends ModalComponent
     {
         $this->state = State::where('id', $id)->get(['id', 'name', 'iso2'])->first();
         $arrayCity = City::where('state_id', $this->state->id)->get(['id', 'name'])->toArray();
-        if($arrayCity)
-        {
+        if ($arrayCity) {
             $this->cities = $this->getArray($arrayCity, 'name', 'id');
             // dd($this->cities);
         }
@@ -93,8 +92,6 @@ class UserInfo extends ModalComponent
 
     public function render()
     {
-        return view('livewire.user-profile.modal.child-modal.user-info', [
-
-        ]);
+        return view('livewire.user-profile.modal.child-modal.user-info', []);
     }
 }

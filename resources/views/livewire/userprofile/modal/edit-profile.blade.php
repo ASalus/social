@@ -5,9 +5,11 @@
         </x-slot>
 
         <x-slot name="content">
-            <div class="">
+            <div class="space-y-3">
                 Photo Preview:
-                @error('image') <span class="danger">{{ $message }}</span> @enderror
+                @error('image')
+                    <span class="danger">{{ $message }}</span>
+                @enderror
                 @if ($image)
                     <img class="ml-auto mr-auto shadow-xl rounded-full h-60 border-none w-60 object-cover"
                         src="{{ $image->temporaryUrl() }}">
@@ -31,7 +33,9 @@
 
             <div class="">
                 Background Image Preview:
-                @error('background') <span class="danger">{{ $message }}</span> @enderror
+                @error('background')
+                    <span class="danger">{{ $message }}</span>
+                @enderror
                 @if ($background)
                     <img class="ml-auto mr-auto shadow-xl rounded-full h-60 border-none w-full object-cover"
                         src="{{ $background->temporaryUrl() }}">

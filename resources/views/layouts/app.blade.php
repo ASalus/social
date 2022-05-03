@@ -11,7 +11,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ mix('js/app.js') }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -24,7 +24,7 @@
 
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        {{-- <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
@@ -79,16 +79,46 @@
                     </ul>
                 </div>
             </div>
-        </nav>
-
-        <main class="py-4">
-            @yield('content')
-        </main>
+        </nav> --}}
+        <div class="">
+            <section class="min-h-screen flex items-stretch text-white ">
+                <div class="lg:flex w-1/2 hidden bg-gray-500 bg-no-repeat bg-cover relative items-center"
+                    style="background-image: url({{ asset('/storage/images/bg1.jpg') }});">
+                    <div class="bg-black opacity-60 inset-0 z-0"></div>
+                    <div class="w-full px-24 z-10">
+                        <h1 class="text-5xl font-bold text-left tracking-wide">This is blog/social network. This project
+                            was developed for partfolio porpeses.</h1>
+                    </div>
+                    <div
+                        class="bottom-0 absolute p-4 text-center right-0 left-0 flex justify-center space-x-4 text-white  text-lg items-center gap-2">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>asimsalus@gmail.com</span>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 w-full flex items-center justify-center text-center md:px-16 px-0 z-0"
+                    style="background-color: #161616;">
+                    <div class="absolute lg:hidden z-10 inset-0 bg-gray-500 bg-no-repeat bg-cover items-center"
+                        style="background-image: url(https://images.unsplash.com/photo-1577495508048-b635879837f1?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=675&q=80);">
+                        <div class="absolute bg-black opacity-60 inset-0 z-0"></div>
+                    </div>
+                    <div class="w-full py-6 z-20">
+                        <h1 class="my-6 text-xl font-bold">
+                            CV Social Media
+                        </h1>
+                        <div class="py-6 space-x-2">
+                            <a href="@yield('link')"
+                                class="w-1/2 h-10 items-center justify-center inline-flex rounded-full font-bold text-lg border-2 border-white hover:text-white">@yield('linkName')</a>
+                        </div>
+                        <p class="text-gray-100">
+                            @yield('orText')
+                        </p>
+                        @yield('content')
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
 
-    <script src="{{ asset('js/app.js') }}"></script>
-    @livewire('livewire-ui-modal')
-    @livewireScripts
 </body>
 
 </html>

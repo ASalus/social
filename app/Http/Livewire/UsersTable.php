@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\QueryException;
@@ -21,6 +22,27 @@ final class UsersTable extends PowerGridComponent
     //Messages informing success/error data is updated.
     public bool $showUpdateMessages = true;
 
+    protected function getListeners(): array
+    {
+        return array_merge(
+            parent::getListeners(),
+            [
+                'refreshTable' => 'refreshTable',
+                'deleteRow' => 'deleteRow'
+            ]
+        );
+    }
+
+    public function refreshTable()
+    {
+        $this->emit('$refresh');
+    }
+
+    public function deleteRow($id)
+    {
+        User::destroy($id);
+        $this->emit('$refresh');
+    }
     /*
     |--------------------------------------------------------------------------
     |  Features Setup
@@ -45,7 +67,9 @@ final class UsersTable extends PowerGridComponent
     */
     public function datasource(): ?Builder
     {
-        return User::query();
+        return User::query()
+            ->join('roles', 'users.role_id', '=', 'roles.id')
+            ->select('users.*', 'roles.role_name as role');
     }
 
     /*
@@ -79,8 +103,9 @@ final class UsersTable extends PowerGridComponent
         return PowerGrid::eloquent()
             ->addColumn('id')
             ->addColumn('name')
+            ->addColumn('username')
             ->addColumn('email')
-            ->addColumn('role_id')
+            ->addColumn('role')
             ->addColumn('created_at_formatted', function (User $model) {
                 return Carbon::parse($model->created_at)->format('d/m/y');
             })
@@ -120,31 +145,38 @@ final class UsersTable extends PowerGridComponent
                 ->editOnClick(),
 
             Column::add()
+                ->title('USERNAME')
+                ->field('username')
+                ->sortable()
+                ->searchable()
+                ->makeInputText()
+                ->editOnClick(),
+
+            Column::add()
                 ->title('EMAIL')
                 ->field('email')
                 ->sortable()
                 ->searchable()
-                ->makeInputText(),
+                ->makeInputText()
+                ->editOnClick(),
 
             Column::add()
                 ->title('ROLE')
-                ->field('role_id')
-                ->makeInputRange(),
+                ->field('role'),
 
             Column::add()
                 ->title('CREATED AT')
-                ->field('created_at_formatted', 'created_at')
+                ->field('created_at_formatted')
                 ->searchable()
                 ->sortable()
-                ->makeInputDatePicker('created_at'),
+                ->makeInputDatePicker('users.created_at'),
 
             Column::add()
                 ->title('UPDATED AT')
-                ->field('updated_at_formatted', 'updated_at')
+                ->field('updated_at_formatted')
                 ->searchable()
                 ->sortable()
-                ->makeInputDatePicker('updated_at'),
-
+                ->makeInputDatePicker('users.updated_at'),
         ];
     }
 
@@ -166,18 +198,15 @@ final class UsersTable extends PowerGridComponent
     public function actions(): array
     {
         return [
-
             Button::add('edit')
-                ->caption('Edit')
-                ->class('bg-indigo-500 cursor-pointer text-white px-2.5 py-2 m-0 rounded text-sm')
-                ->route('admin.user.edit', ['id' => 'id'])
-                ->method('head'),
+                ->caption('Edit role')
+                ->class('cursor-pointer bg-indigo text-white px-2 py-2 m-0 rounded text-sm')
+                ->openModal('admin.user-edit', ['user' => 'id']),
 
             Button::add('destroy')
                 ->caption('Delete')
-                ->class('bg-red-500 cursor-pointer text-white px-2.5 py-2 m-0 rounded text-sm')
-                ->route('admin.user.delete', ['id' => 'id'])
-                ->method('delete')
+                ->class('cursor-pointer bg-red text-white px-2 py-2 m-0 rounded text-sm')
+                ->emit('deleteRow', ['id' => 'id'])
         ];
     }
 

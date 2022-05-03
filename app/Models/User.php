@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
-use App\Http\Livewire\UserPosts;
+
 use App\Models\Post\PostStat;
 use App\Models\Post\UserPostStat;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -47,31 +46,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    public static function boot()
-    {
-        parent::boot();
-
-        /**
-         * Write code on Method
-         *
-         * @return response()
-         */
-        static::created(function (User $user) {
-            $avatar = public_path().'/images/placeholder.jpg';
-            $background = public_path().'/images/bg-placeholder.jpg';
-            $path = 'images/users/'.$user->username;
-
-            Storage::putFileAs('public/'.$path, $avatar, 'avatar.jpg');
-            Storage::putFileAs('public/'.$path, $background, 'background.jpg');
-
-            UserInfo::create([
-                'user_id' => $user->id,
-                'avatar' => $path.'/avatar.jpg',
-                'background' => $path.'/background.jpg',
-            ]);
-        });
-    }
 
     public function posts()
     {

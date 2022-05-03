@@ -15,8 +15,8 @@
                 <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
                 <div class="input-group-append">
                     <button class="btn btn-sidebar">
-                    <i class="fas fa-search fa-fw"></i>
-                </button>
+                        <i class="fas fa-search fa-fw"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -36,19 +36,22 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('admin.user.table') }}" class="nav-link {{ Route::is('user.table') ? 'active' : '' }}">
+                            <a href="{{ route('admin.user.table') }}"
+                                class="nav-link {{ Route::is('admin.user.table') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Users</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.category.table') }}" class="nav-link {{ Route::is('category.table') ? 'active' : '' }}">
+                            <a href="{{ route('admin.tag.table') }}"
+                                class="nav-link {{ Route::is('admin.tag.table') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Categories</p>
+                                <p>Tags</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.post.table') }}" class="nav-link {{ Route::is('post.table') ? 'active' : '' }}">
+                            <a href="{{ route('admin.post.table') }}"
+                                class="nav-link {{ Route::is('admin.post.table') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Posts</p>
                             </a>
@@ -56,7 +59,8 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('admin.todo') }}" class="nav-link {{ Route::is('admin.todo') ? 'active' : '' }}">
+                    <a href="{{ route('admin.todo') }}"
+                        class="nav-link {{ Route::is('admin.todo') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-th"></i>
                         <p>
                             To do list
@@ -69,7 +73,6 @@
     </div>
     <!-- /.sidebar -->
 </aside>
-{{--
-@push('scripts')
+{{-- @push('scripts')
 <script></script>
 @endpush --}}

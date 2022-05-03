@@ -6,7 +6,9 @@ use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Post\PostStat;
 use App\Models\Post\PostToPost;
+use App\Models\Post\Tag;
 use App\Models\Post\UserPostStat;
+use App\Models\User;
 use ArrayObject;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -17,6 +19,8 @@ class Comments extends Component
     use WithFileUploads;
 
     public $postText;
+    public $postTags = [];
+    public $mentions = [];
     // public $category;
     public $imageInputModal = [];
     public $isDisabled = true;
@@ -30,7 +34,7 @@ class Comments extends Component
     ];
 
     protected $rules = [
-        'postText' => 'required|min:2|max:255',
+        'postText' => 'required|min:2|max:1024',
         'imageInputModal.*' => 'max:1024',
     ];
 
@@ -48,30 +52,30 @@ class Comments extends Component
     public function store()
     {
         $this->validate();
-
+        // dd($this->postTags);
         $i = 1;
-        $filenames= new ArrayObject();
+        $filenames = new ArrayObject();
         $last_id = 0;
-        if(DB::table('posts')->count() !== 0){
+        if (DB::table('posts')->count() !== 0) {
             $last_id = DB::table('posts')->latest('id')->first()->id;
         }
         foreach ($this->imagesModal as $image) {
-            $path = 'images/users/'.auth()->user()->username.'/posts/'. $last_id+1;
-            $filenames->append($path.'/'. $i. '.jpg');
+            $path = 'images/users/' . auth()->user()->username . '/posts/' . $last_id + 1;
+            $filenames->append($path . '/' . $i . '.jpg');
             //dd(json_encode($filenames));
             $image->storeAs(
-                'public/'.$path,
-                $i.'.jpg'
+                'public/' . $path,
+                $i . '.jpg'
             );
-            $i +=1;
+            $i += 1;
         }
-
-
 
         $comment = Post::create([
             'user_id' => auth()->user()->id,
             'full_text' => $this->postText,
             'image' => json_encode($filenames),
+            'tags' => json_encode((object) $this->postTags),
+            'mentions' => json_encode((object) $this->mentions),
             'to_post' => true,
         ]);
 
@@ -84,8 +88,24 @@ class Comments extends Component
             'to_post_id' => $this->post->id
         ]);
 
+        foreach ($this->postTags as $tag) {
+            Tag::firstOrCreate([
+                'tag' => $tag,
+            ]);
+        }
+
         $this->reset(['postText', 'imageInputModal', 'imagesModal']);
         $this->emit('refreshPosts', $this->post->id);
+    }
+
+    public function numberFilter($n)
+    {
+        if ($n > 1000000000000) return round(($n / 1000000000000), 1) . 'T';
+        else if ($n > 1000000000) return round(($n / 1000000000), 1) . 'B';
+        else if ($n > 1000000) return round(($n / 1000000), 1) . 'M';
+        else if ($n > 1000) return round(($n / 1000), 1) . 'K';
+
+        return number_format($n);
     }
 
     public function openPostModal(Post $post)
@@ -102,13 +122,10 @@ class Comments extends Component
             'post_id' => $post->id,
             'user_id' => auth()->user()->id,
         ]);
-        if($userPostStat->resend == false)
-        {
+        if ($userPostStat->resend == false) {
             $userPostStat->resend = true;
             $post->stats->resend += 1;
-        }
-        else
-        {
+        } else {
             $userPostStat->resend = false;
             $post->stats->resend -= 1;
         }
@@ -124,13 +141,10 @@ class Comments extends Component
             'post_id' => $post->id,
             'user_id' => auth()->user()->id,
         ]);
-        if($userPostStat->liked == false)
-        {
+        if ($userPostStat->liked == false) {
             $userPostStat->liked = true;
             $post->stats->like += 1;
-        }
-        else
-        {
+        } else {
             $userPostStat->liked = false;
             $post->stats->like -= 1;
         }
@@ -157,6 +171,20 @@ class Comments extends Component
     {
         $this->post = $post;
         $this->totalAmount = $post->postsToPost->count();
+        $this->mentionables = User::all()->load('userInfo')
+            ->map(function ($user) {
+                return [
+                    'key' => $user->username,
+                    'value' => $user->name,
+                    'image' => $user->userInfo->avatar
+                ];
+            });
+        $this->tags = Tag::all()->map(function ($tag) {
+            return [
+                'key' => $tag->id,
+                'value' => $tag->tag,
+            ];
+        });
     }
 
     public function render()

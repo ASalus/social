@@ -37,7 +37,7 @@ class EditProfile extends ModalComponent
                 'background.jpg'
             );
             $this->user->userInfo->background = $filenameBg;
-
+            $this->user->userInfo->save();
         }
         if ($this->image) {
 
@@ -50,8 +50,7 @@ class EditProfile extends ModalComponent
             );
 
             $this->user->userInfo->avatar = $filenameAvatar;
-            // $this->user->save();
-
+            $this->user->userInfo->save();
         }
 
         $this->emit("openModal", "user-profile.modal.child-modal.user-info");

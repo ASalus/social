@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^3.4",
         "livewire/livewire": "^2.10",
+        "orangehill/iseed": "^3.0",
         "power-components/livewire-powergrid": "^2.2",
         "wire-elements/modal": "^1.0"
     },

@@ -2,11 +2,11 @@
 
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\User\UserController as UserUserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use PHPUnit\TextUI\XmlConfiguration\Group;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ use PHPUnit\TextUI\XmlConfiguration\Group;
 */
 
 
-Auth::routes();
+Auth::routes(['verify' => true]);
 
 Route::get('/', function () {
     return view('auth.login');
@@ -72,7 +72,7 @@ Route::group(
         );
 
         /* Category Controller Routes */
-        Route::controller(CategoryController::class)->prefix('categories')->as('category.')->group(
+        Route::controller(TagController::class)->prefix('tags')->as('tag.')->group(
             function () {
                 Route::get('', 'index')->name('table');
                 Route::get('{id}/edit', 'edit')->name('edit');
@@ -86,5 +86,20 @@ Route::group(
 Route::controller(UserUserController::class)->prefix('users')->as('user.')->group(
     function () {
         Route::get('/{username}', 'profile')->name('profile');
+    }
+);
+
+
+Route::group(
+    [
+        'prefix' => 'search',
+        'as' => 'search.',
+    ],
+    function () {
+        Route::get('/{value}', function ($value) {
+            return view('userPages.search', [
+                'value' => $value
+            ]);
+        })->name('tags');
     }
 );

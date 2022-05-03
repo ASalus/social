@@ -20,7 +20,7 @@ $fa-font-path:"../webfonts";
 @import "~@fortawesome/fontawesome-free/scss/regular.scss";
 
 
-.nav-badge{
+.nav-badge {
     font-size: 70% !important;
     color: #fff;
     position: absolute;
@@ -33,7 +33,7 @@ $fa-font-path:"../webfonts";
     overflow: auto !important;
 }
 
-.content-wrapper .kanban{
+.content-wrapper .kanban {
     margin-left: 0px !important;
 }
 
@@ -45,13 +45,15 @@ $fa-font-path:"../webfonts";
     font-size: 15px;
     min-height: 32px;
     cursor: text;
-  }
-  .tribute-demo-input:focus {
+}
+
+.tribute-demo-input:focus {
     border-color: #d1d1d1;
     background-color: #fbfbfb;
-  }
-  [contenteditable="true"]:empty:before {
+}
+
+[contenteditable="true"]:empty:before {
     content: attr(placeholder);
     display: block;
     color: #ccc;
-  }
+}

@@ -1,17 +1,12 @@
 window._ = require('lodash');
 
-const { default: Autolinker } = require('autolinker');
-
-
-
 try {
-
     window.Popper = require('popper.js').default;
     window.$ = window.jQuery = require('jquery');
-
+    window.Autolinker = require('autolinker');
+    window.Swal = require('sweetalert2')
     require('bootstrap');
     require('admin-lte');
-    window.Autolinker = Autolinker;
 
 } catch (e) {}
 

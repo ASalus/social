@@ -1,4 +1,4 @@
-<div class="">
+<div class="relative">
     {{-- New Comment Form --}}
     <div class="new-user-post ml-4" x-data="data()">
         <form wire:submit.prevent='store'>
@@ -10,7 +10,7 @@
                 </div>
                 <div class="flex-1 px-2 pt-2 mt-2">
                     <textarea wire:ignore class="bg-transparent resize-none text-gray-400 font-medium text-lg w-full" rows="1"
-                        @click="open=true; $nextTick(() => $refs.comment.focus())"
+                        @click="open=true; $nextTick(() => $refs.postArea.focus())"
                         placeholder="Comment the post?"></textarea>
                     {{-- @error('postText') <span class="error">{{ $message }}</span> @enderror --}}
                 </div>
@@ -24,11 +24,18 @@
                         <img class="inline-block h-10 w-10 rounded-full"
                             src="{{ asset('storage/' . auth()->user()->userInfo->avatar) }}" alt="">
                     </div>
-                    <div class="flex-1 px-2 pt-2 mt-2">
-                        <textarea wire:ignore class="bg-transparent resize-none text-gray-400 font-medium text-lg w-full" rows="4"
-                            @click="open=true;" x-ref="comment" placeholder="Comment the post?" name='postText'
-                            id='postText' wire:model.debounce.500ms='postText'></textarea>
-                        {{-- @error('postText') <span class="error">{{ $message }}</span> @enderror --}}
+                    <div class="relative flex-1 px-2 pt-2 mt-2" x-data="{ content: @entangle('postText') }">
+                        <div id='postCom{{ $post->id }}' maxlength='255'
+                            class='postArea text-left bg-transparent text-gray-400 font-medium text-lg w-full overflow-y-auto h-28'
+                            x-ref="postArea" placeholder="Comment the post?"
+                            @input|keydown|click='content = $event.target.innerHTML;' name="postTest" wire:ignore></div>
+                        <span contenteditable="false"
+                            class="absolute px-2 py-1 text-xs text-blueGray-600 rounded right-2 bottom-0"
+                            x-text="$refs.postArea.getAttribute('maxlength') - @js(strlen(strip_tags(str_replace('&nbsp;', ' ', $postText))))"
+                            x-cloak></span>
+                        @error('postText')
+                            <span class="error">{{ $message }}</span>
+                        @enderror
                         <ul wire:ignore id="galleryModal" class="flex flex-1 flex-wrap -m-1">
                             <li id="empty" class="h-full w-full text-center flex flex-col justify-center ">
                             </li>
@@ -45,8 +52,9 @@
                             ondragenter="dragEnterHandler(event);">
                             <div class="flex-1 text-center px-1 py-1 m-2">
                                 <div class="">
-                                    <input wire:ignore id="hiddenInput2" wire:model.debounce="imageInputModal"
-                                        type="file" multiple class="hidden" />
+                                    <input wire:ignore id="hiddenInput{{ $post->id }}"
+                                        wire:model.debounce="imageInputModal" type="file" multiple
+                                        class="hidden" />
                                     <a class="tw-new-post-links" id="buttonModal">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="text-center h-7 w-6" fill="none"
                                             stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -105,7 +113,8 @@
                     <div class="flex-1">
                         <button wire:target='store' id="submitModal"
                             {{ isset($postText) && !empty($postText) ? '' : 'disabled' }}
-                            class="tw-new-post-submit-btn">
+                            class="tw-new-post-submit-btn"
+                            @click="$wire.postText = $refs.postArea.innerHTML; $refs.postArea.innerHTML = ''">
                             Send
                         </button>
                     </div>
@@ -117,186 +126,16 @@
     {{-- All comments to post --}}
 
     <ul class="">
-
         @foreach ($comments->load('post') as $comment)
             <li @if ($loop->last) id="last-comment" @endif x-data class="user-posts border grow">
-                <div x-on:click.stop="" class="flex flex-shrink-0 p-4 pb-0">
-                    <object type="ouo">
-                        <a href="/" class="flex-shrink-0 group block">
-                            <div class="flex items-center">
-                                <div class="z-10">
-                                    <img class="inline-block h-10 w-10 rounded-full"
-                                        src="{{ asset('storage/' . $comment->post->user->userInfo->avatar) }}" alt="">
-                                </div>
-                                <div class="ml-3">
-                                    <p
-                                        class="text-base leading-6 font-bold text-blueGray-900 group-hover:text-blueGray-700">
-                                        @yield('user-name')
-                                        <span class="tw-post-auth-ad">
-                                            {{ '@' . $comment->post->user->username . ' · ' . date_format($comment->post->created_at, 'd F Y') }}
-                                        </span>
-                                    </p>
-                                </div>
-                            </div>
-                        </a>
-                    </object>
-                </div>
-                <div class="pl-16">
-                    <p class="ml-3 width-auto tw-post-text">
-                        {{ $comment->post->full_text }}
-                    </p>
-                    <div class="flex flex-wrap justify-center">
-                        @if ($comment->post->image)
-                            <div id="comment{{ $comment->post->id }}" class="carousel slide relative"
-                                data-bs-ride="carousel">
-                                <div class="carousel-inner relative w-full overflow-hidden">
-                                    <?php $i = 0; ?>
-                                    @foreach (json_decode($comment->post->image) as $image)
-                                        @if ($i == 0)
-                                            <div class="carousel-item active relative float-left w-full">
-                                                <img class="object-cover max-w-lg h-96 inline-block"
-                                                    :class="{'max-w-xs h-40':@js($comment->toPost->image != '{}') }"
-                                                    src="{{ asset('storage/' . $image) }}">
-                                            </div>
-                                        @else
-                                            <div class="carousel-item relative float-left w-full">
-                                                <img class="object-cover sm:max-w-xs sm:h-40 md:max-w-xs md:h-40 lg:max-w-xs lg:h-40 xl:max-w-lg xl/:h-80 inline-block"
-                                                    src="{{ asset('storage/' . $image) }}">
-                                            </div>
-                                        @endif
-                                        <?php $i += 1; ?>
-                                    @endforeach
-                                </div>
-                                @if (count((array) json_decode($comment->image)) > 1)
-                                    <button x-on:click.stop=""
-                                        class="carousel-control-prev absolute top-0 bottom-0 flex items-center justify-center p-0 text-center border-0 hover:outline-none hover:no-underline focus:outline-none focus:no-underline left-0"
-                                        type="button" data-bs-target="#comment{{ $comment->id }}"
-                                        data-bs-slide="prev">
-                                        <span class="carousel-control-prev-icon inline-block bg-no-repeat"
-                                            aria-hidden="true"></span>
-                                        <span class="visually-hidden">Previous</span>
-                                    </button>
-                                    <button x-on:click.stop=""
-                                        class="carousel-control-next absolute top-0 bottom-0 flex items-center justify-center p-0 text-center border-0 hover:outline-none hover:no-underline focus:outline-none focus:no-underline right-0"
-                                        type="button" data-bs-target="#comment{{ $comment->id }}"
-                                        data-bs-slide="next">
-                                        <span class="carousel-control-next-icon inline-block bg-no-repeat"
-                                            aria-hidden="true"></span>
-                                        <span class="visually-hidden">Next</span>
-                                    </button>
-                                @endif
-                            </div>
-                        @endif
-
-                    </div>
-                    <div class="flex">
-                        <div class="w-full">
-
-                            <div class="flex items-center">
-
-                                <div class="flex-1 text-center">
-                                    <div
-                                        class="tw-post-links text-gray-500 hover:bg-blue-600 hover:text-blue-600 hover:bg-opacity-50">
-                                        <a x-on:click.stop="$wire.openPostModal({{ $comment->post->id }});"
-                                            class="hover:text-blue-600">
-                                            <svg class="text-center h-6 w-6" fill="none" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="2" stroke="currentColor"
-                                                viewBox="0 0 24 24" user-darkreader-inline-stroke=""
-                                                style="--darkreader-inline-stroke:currentColor;">
-                                                <path
-                                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
-                                                </path>
-                                            </svg>
-                                        </a>
-                                        <span class="">
-                                            {{ $comment->post->postsToPost->count() }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="flex-1 text-center py-2 m-2">
-                                    <div x-on:click.stop="$wire.resendClick({{ $comment->post->id }})"
-                                        class="tw-post-links text-gray-500 hover:bg-green-500 hover:text-green-500 hover:bg-opacity-50"
-                                        @if (auth()->user()->userPostStat->where('post_id', $comment->post->id)->isNotEmpty()) :class="{
-                                            'text-green-500': @js(auth()->user()->userPostStat->where('post_id', $comment->post->id)->firstOrFail()->resend == true)
-                                        }" @endif>
-                                        <a class="hover:text-green-500">
-                                            <svg class="text-center h-7 w-6" fill="none" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="2" stroke="currentColor"
-                                                viewBox="0 0 24 24" user-darkreader-inline-stroke=""
-                                                style="--darkreader-inline-stroke:currentColor;">
-                                                <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-                                            </svg>
-                                        </a>
-                                        <span class=""> {{ $comment->post->stats->resend }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="flex-1 text-center py-2 m-2">
-                                    <div x-on:click.stop="$wire.likeClick({{ $comment->post->id }})"
-                                        class="tw-post-links text-gray-500 hover:bg-pink-600 hover:text-pink-600 hover:bg-opacity-50"
-                                        @if (auth()->user()->userPostStat->where('post_id', $comment->post->id)->isNotEmpty()) :class="{
-                                            'text-pink-600': @js(auth()->user()->userPostStat->where('post_id', $comment->post->id)->firstOrFail()->liked == true)
-                                        }" @endif>
-                                        <a class="hover:text-pink-600">
-                                            <svg class="text-center h-7 w-6" fill="none" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="2" stroke="currentColor"
-                                                viewBox="0 0 24 24" user-darkreader-inline-stroke=""
-                                                style="--darkreader-inline-stroke:currentColor;">
-                                                <path
-                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
-                                                </path>
-                                            </svg>
-                                        </a>
-                                        <span class=""> {{ $comment->post->stats->like }}</span>
-                                    </div>
-                                </div>
-
-                                {{-- <div class="flex-1 text-center py-2 m-2">
-                            <a href="#" class="tw-post-links">
-                                <svg class="text-center h-7 w-6" fill="none" stroke-linecap="round"
-                                    stroke-linejoin="round" stroke-width="2" stroke="currentColor"
-                                    viewBox="0 0 24 24" user-darkreader-inline-stroke=""
-                                    style="--darkreader-inline-stroke:currentColor;">
-                                    <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12">
-                                    </path>
-                                </svg>
-                            </a>
-                        </div>
-                        <div class="flex-1 text-center py-2 m-2">
-                            <a href="#" class="tw-post-links">
-                                <svg class="text-center h-7 w-6" fill="none" stroke-linecap="round"
-                                    stroke-linejoin="round" stroke-width="2" stroke="currentColor"
-                                    viewBox="0 0 24 24" user-darkreader-inline-stroke=""
-                                    style="--darkreader-inline-stroke:currentColor;">
-                                    <path
-                                        d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20">
-                                    </path>
-                                </svg>
-                            </a>
-                        </div>
-                        <div class="flex-1 text-center py-2 m-2">
-                            <a href="#" class="tw-post-links">
-                                <svg class="text-center h-7 w-6" fill="none" stroke-linecap="round"
-                                    stroke-linejoin="round" stroke-width="2" stroke="currentColor"
-                                    viewBox="0 0 24 24" user-darkreader-inline-stroke=""
-                                    style="--darkreader-inline-stroke:currentColor;">
-                                    <path
-                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                                    </path>
-                                </svg>
-                            </a>
-                        </div> --}}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                @livewire('components.post', ['post' => $comment->post], key($comment->post->id))
             </li>
         @endforeach
     </ul>
 
     @if ($loadAmount < $totalAmount)
-        <x-loading-animation wire:loading></x-loading-animation>
+        <x-loading-animation wire:loading>
+        </x-loading-animation>
     @endif
 
     <template id="file-template-modal">
@@ -307,7 +146,7 @@
                     class="img-preview hidden w-full h-full sticky object-cover rounded-md bg-fixed" />
 
                 <section
-                    class="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
+                    class="flex flex-col rounded-md text-xs break-words break-all w-full h-full z-20 absolute top-0 py-2 px-3">
                     <h1 class="flex-1 group-hover:text-blue-800"></h1>
                     <div class="flex">
                         <span class="p-1 text-blue-800">
@@ -368,6 +207,54 @@
         </li>
     </template>
 
+    {{-- Autolinker JS Config --}}
+    <script>
+        $(document).ready(function(e) {
+            var open = false;
+
+            $('.postArea').on('input keyup click customEvent', function(e, open) {
+                // console.log('working');
+                let myLinkedHtml = Autolinker.Autolinker.link($(this).html(), {
+                    mention: false,
+                    hashtag: 'twitter',
+                    className: 'text-blue-600 hover:underline',
+                    replaceFn: function(match) {
+                        // console.log("href = ", match.getAnchorHref());
+                        // console.log("text = ", match.getAnchorText());
+                        // console.log((match.getType()));
+
+                        switch (match.getType()) {
+                            case 'hashtag':
+                                var hashtag = match.getHashtag();
+                                // console.log(hashtag);
+
+                                return '<a href="/tags/' + hashtag +
+                                    '" class="text-blue-600 hover:underline">#' + hashtag +
+                                    '</a>';
+
+                            case 'mention':
+                                var mention = match.getMention();
+                                // console.log(mention);
+
+                                return '<a href="/user/' + mention + '">@' + mention + '</a>';
+                        }
+                    }
+                });
+                // [optional] make sure focus is on the element
+                $(this).trigger('focus');
+                // select all the content in the element
+                if (e.key == ' ' || open) {
+                    document.execCommand('selectAll', false, $(this).html(myLinkedHtml))
+                    open = false;
+                };
+
+                document.getSelection().collapseToEnd();
+            });
+
+        })
+    </script>
+
+    {{-- File Upload Code --}}
     <script>
         const fileTempl = document.getElementById("file-template-modal"),
             imageTempl = document.getElementById("image-template-modal"),
@@ -418,7 +305,7 @@
 
         // click the hidden input of type file if the visible button is clicked
         // and capture the selected files
-        const hidden = document.getElementById("hiddenInput2");
+        const hidden = document.getElementById("hiddenInput" + @json($post->id));
         document.getElementById("buttonModal").onclick = () => hidden.click();
         hidden.onchange = (e) => {
             e.preventDefault();
@@ -497,6 +384,18 @@
 
         // print all selected files
         document.getElementById("submitModal").onclick = () => {
+            $('.postArea').trigger('customEvent', [true])
+            @this.postTags = ($('.postArea').find('a').map(function() {
+                if ($(this).text()[0] === '#') {
+                    return $.trim($(this).text());
+                }
+            }).get());
+
+            @this.mentions = ($('.postArea').find('a').map(function() {
+                if ($(this).text()[0] === '@') {
+                    return $.trim($(this).text());
+                }
+            }).get());
             while (galleryModal.children.length > 0) {
                 galleryModal.lastChild.remove();
             }
@@ -517,6 +416,7 @@
         // };
     </script>
 
+    {{-- Alpine Data --}}
     <script>
         window.data = () => {
             return {
@@ -525,6 +425,7 @@
         }
     </script>
 
+    {{-- File Upload Styles --}}
     <style>
         .hasImage:hover section {
             background-color: rgba(5, 5, 5, 0.4);
@@ -554,6 +455,7 @@
 
     </style>
 
+    {{-- Posts Scroll Load --}}
     <script>
         const lastComment = document.getElementById('last-comment');
         const options = {
@@ -569,7 +471,77 @@
             });
         });
         if (Object.keys(@js($comments)).length > 0) observer.observe(lastComment);
-
     </script>
 
+    {{-- Tribute JS Config --}}
+    <script>
+        var tributeMultipleTriggers = new Tribute({
+            collection: [{
+                // The function that gets call on select that retuns the content to insert
+                selectTemplate: function(item) {
+                    if (this.range.isContentEditable(this.current.element)) {
+                        return (
+                            '<a href="/users/' + item.original.key + '" title="' +
+                            item.original.value +
+                            '" class="text-blue-600 hover:underline">@' +
+                            item.original.key +
+                            "</a>"
+                        );
+                    }
+
+                    return "@" + item.original.value;
+                },
+                menuItemTemplate: function(item) {
+                    // console.log(item);
+                    return '<img class="w-4 h-4 object-cover rounded-full" src="/storage/' + item
+                        .original.image + '">' + item.string;
+                },
+                noMatchTemplate: function() {
+                    return null;
+                },
+
+                // the array of objects
+                values: @json($mentionables)
+            }, {
+                // The symbol that starts the lookup
+                trigger: "#",
+                menuItemTemplate: function(item) {
+                    return item.string;
+                },
+                // The function that gets call on select that retuns the content to insert
+                selectTemplate: function(item) {
+                    if (this.range.isContentEditable(this.current.element)) {
+                        return (
+                            '<a href="/search/tags/' + encodeURIComponent(item.original.value) +
+                            '" title="' +
+                            item.original.value +
+                            '" class="text-blue-600 hover:underline">' +
+                            item.original.value +
+                            "</a>"
+                        );
+                    }
+                },
+
+                // function retrieving an array of objects
+                values: @json($tags),
+
+                lookup: "value",
+
+                fillAttr: "value",
+            }],
+            noMatchTemplate: function(item) {
+                if (this.current.collection.trigger === "#") {
+                    return "<li class = 'noMatches'>No matches found - Tag will be added</li>";
+                } else if (this.current.collection.trigger === "@") {
+                    return "<li class = 'noMatches'>No matches found</li>";
+                }
+            }
+        })
+
+        // console.log();
+        // Autolinker = Autolinker
+
+
+        tributeMultipleTriggers.attach(document.getElementById("postCom" + @json($post->id)));
+    </script>
 </div>
