@@ -1,7 +1,7 @@
 <div class="relative">
     {{-- New Comment Form --}}
     <div class="new-user-post ml-4" x-data="data()">
-        <form wire:submit.prevent='store'>
+        <form wire:submit.prevent='store' x-data="{ content: @entangle('postText') }">
             @csrf
             <div x-show="!open" class="flex">
                 <div class="m-2 w-10 py-1">
@@ -24,11 +24,11 @@
                         <img class="inline-block h-10 w-10 rounded-full"
                             src="{{ asset('storage/' . auth()->user()->userInfo->avatar) }}" alt="">
                     </div>
-                    <div class="relative flex-1 px-2 pt-2 mt-2" x-data="{ content: @entangle('postText') }">
+                    <div class="relative flex-1 px-2 pt-2 mt-2">
                         <div id='postCom{{ $post->id }}' maxlength='255'
                             class='postArea text-left bg-transparent text-gray-400 font-medium text-lg w-full overflow-y-auto h-28'
                             x-ref="postArea" placeholder="Comment the post?"
-                            @input|keydown|click='content = $event.target.innerHTML;' name="postTest" wire:ignore></div>
+                            @input|keyup|click='content = $event.target.innerHTML;' name="postTest" wire:ignore></div>
                         <span contenteditable="false"
                             class="absolute px-2 py-1 text-xs text-blueGray-600 rounded right-2 bottom-0"
                             x-text="$refs.postArea.getAttribute('maxlength') - @js(strlen(strip_tags(str_replace('&nbsp;', ' ', $postText))))"
@@ -50,9 +50,9 @@
                         <div aria-label="File Upload Modal" class="flex items-center" ondrop="dropHandler(event);"
                             ondragover="dragOverHandler(event);" ondragleave="dragLeaveHandler(event);"
                             ondragenter="dragEnterHandler(event);">
-                            <div class="flex-1 text-center px-1 py-1 m-2">
-                                <div class="">
-                                    <input wire:ignore id="hiddenInput{{ $post->id }}"
+                            <div class="flex-1 text-center px-1 py-1 m-2 justify-center text-gray-500">
+                                <div class="w-10">
+                                    <input wire:ignore id="hiddenInput{{ $post->id }}" accept=".jpg, .jpeg, .png"
                                         wire:model.debounce="imageInputModal" type="file" multiple
                                         class="hidden" />
                                     <a class="tw-new-post-links" id="buttonModal">
@@ -67,54 +67,13 @@
                                     </a>
                                 </div>
                             </div>
-
-                            <div class="flex-1 text-center py-2 m-2">
-                                <a href="#" class="tw-new-post-links">
-                                    <svg class="text-center h-7 w-6" fill="none" stroke-linecap="round"
-                                        stroke-linejoin="round" stroke-width="2" stroke="currentColor"
-                                        viewBox="0 0 24 24" data-darkreader-inline-stroke=""
-                                        style="--darkreader-inline-stroke:currentColor;">
-                                        <path
-                                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
-                                        </path>
-                                        <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </a>
-                            </div>
-
-                            <div class="flex-1 text-center py-2 m-2">
-                                <a href="#" class="tw-new-post-links">
-                                    <svg class="text-center h-7 w-6" fill="none" stroke-linecap="round"
-                                        stroke-linejoin="round" stroke-width="2" stroke="currentColor"
-                                        viewBox="0 0 24 24" data-darkreader-inline-stroke=""
-                                        style="--darkreader-inline-stroke:currentColor;">
-                                        <path
-                                            d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                        </path>
-                                    </svg>
-                                </a>
-                            </div>
-
-                            <div class="flex-1 text-center py-2 m-2">
-                                <a href="#" class="tw-new-post-links">
-                                    <svg class="text-center h-7 w-6" fill="none" stroke-linecap="round"
-                                        stroke-linejoin="round" stroke-width="2" stroke="currentColor"
-                                        viewBox="0 0 24 24" data-darkreader-inline-stroke=""
-                                        style="--darkreader-inline-stroke:currentColor;">
-                                        <path
-                                            d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                        </path>
-                                    </svg>
-                                </a>
-                            </div>
                         </div>
                     </div>
 
                     <div class="flex-1">
                         <button wire:target='store' id="submitModal"
                             {{ isset($postText) && !empty($postText) ? '' : 'disabled' }}
-                            class="tw-new-post-submit-btn"
-                            @click="$wire.postText = $refs.postArea.innerHTML; $refs.postArea.innerHTML = ''">
+                            class="tw-new-post-submit-btn" @click="$refs.postArea.innerHTML = null">
                             Send
                         </button>
                     </div>
@@ -228,7 +187,7 @@
                                 var hashtag = match.getHashtag();
                                 // console.log(hashtag);
 
-                                return '<a href="/tags/' + hashtag +
+                                return '<a href="/search/%23' + hashtag +
                                     '" class="text-blue-600 hover:underline">#' + hashtag +
                                     '</a>';
 
@@ -512,7 +471,7 @@
                 selectTemplate: function(item) {
                     if (this.range.isContentEditable(this.current.element)) {
                         return (
-                            '<a href="/search/tags/' + encodeURIComponent(item.original.value) +
+                            '<a href="/search/' + encodeURIComponent(item.original.value) +
                             '" title="' +
                             item.original.value +
                             '" class="text-blue-600 hover:underline">' +

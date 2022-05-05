@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire\UserProfile;
 
-use App\Models\Comment;
 use App\Models\Post;
 use App\Models\Post\PostStat;
 use App\Models\Post\PostToPost;
@@ -64,8 +63,9 @@ class Comments extends Component
             $filenames->append($path . '/' . $i . '.jpg');
             //dd(json_encode($filenames));
             $image->storeAs(
-                'public/' . $path,
-                $i . '.jpg'
+                $path,
+                $i . '.jpg', 
+                'public'
             );
             $i += 1;
         }
@@ -115,44 +115,6 @@ class Comments extends Component
             : $this->emit('openModal', 'user-profile.modal.post-modal', ['post' => $post->id]);
     }
 
-    public function resendClick(Post $post)
-    {
-
-        $userPostStat = UserPostStat::firstOrCreate([
-            'post_id' => $post->id,
-            'user_id' => auth()->user()->id,
-        ]);
-        if ($userPostStat->resend == false) {
-            $userPostStat->resend = true;
-            $post->stats->resend += 1;
-        } else {
-            $userPostStat->resend = false;
-            $post->stats->resend -= 1;
-        }
-        $userPostStat->save();
-        $post->stats->save();
-        $this->emit('$refresh');
-    }
-
-    public function likeClick(Post $post)
-    {
-
-        $userPostStat = UserPostStat::firstOrCreate([
-            'post_id' => $post->id,
-            'user_id' => auth()->user()->id,
-        ]);
-        if ($userPostStat->liked == false) {
-            $userPostStat->liked = true;
-            $post->stats->like += 1;
-        } else {
-            $userPostStat->liked = false;
-            $post->stats->like -= 1;
-        }
-        $userPostStat->save();
-        $post->stats->save();
-        $this->emit('$refresh');
-    }
-
     public function deleteImage($id)
     {
         array_splice($this->imagesModal, $id, 1);
@@ -190,7 +152,10 @@ class Comments extends Component
     public function render()
     {
         return view('livewire.user-profile.comments', [
-            'comments' => $this->post->postsToPost->sortByDesc('created_at')->take($this->loadAmount)
+            'comments' => $this->post
+                ->postsToPost
+                ->sortByDesc('created_at')
+                ->take($this->loadAmount)
         ]);
     }
 }

@@ -33,8 +33,9 @@ class EditProfile extends ModalComponent
             $filenameBg = $path . '/background.jpg';
             //dd(json_encode($filenames));
             $this->background->storeAs(
-                'public/' . $path,
-                'background.jpg'
+                $path,
+                'background.jpg',
+                'public'
             );
             $this->user->userInfo->background = $filenameBg;
             $this->user->userInfo->save();
@@ -45,8 +46,9 @@ class EditProfile extends ModalComponent
             $filenameAvatar = $path . '/avatar.jpg';
             //dd(json_encode($filenames));
             $this->image->storeAs(
-                'public/' . $path,
-                'avatar.jpg'
+                $path,
+                'avatar.jpg',
+                'public'
             );
 
             $this->user->userInfo->avatar = $filenameAvatar;

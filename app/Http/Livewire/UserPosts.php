@@ -2,12 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Models\Post;
-use App\Models\Post\PostStat;
-use App\Models\Post\UserPostStat;
 use App\Models\User;
-use ArrayObject;
-use EmptyIterator;
 use Livewire\Component;
 
 class UserPosts extends Component
@@ -22,8 +17,13 @@ class UserPosts extends Component
     public $commentsCount;
 
     protected $listeners = [
-        'refreshPosts' => 'render',
+        'refreshPosts' => 'reloadPosts',
     ];
+
+    public function reloadPosts()
+    {
+        $this->emit('$refresh');
+    }
 
     public function loadMore()
     {

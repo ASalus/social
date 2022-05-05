@@ -53,8 +53,8 @@ class NewPost extends Component
             $filenames->append($path . '/' . $i . '.jpg');
             //dd(json_encode($filenames));
             $image->storeAs(
-                'public/' . $path,
-                $i . '.jpg'
+                $path,
+                $i . '.jpg', 'public'
             );
             $i += 1;
         }
@@ -75,7 +75,7 @@ class NewPost extends Component
                 'tag' => $tag,
             ]);
         }
-
+        shell_exec("chmod -R ug+rwx storage bootstrap/cache");
         $this->reset('postText', 'images', 'imageInput');
         $this->emit('refreshPosts', $post);
     }

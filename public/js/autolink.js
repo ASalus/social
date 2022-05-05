@@ -1,7 +1,7 @@
 $(document).ready(function (e) {
     var open = false;
 
-    $('.postArea').on('input keyup click customEvent', function (e, open) {
+    $('.postArea').on('input keydown click customEvent', function (e, open) {
         // console.log('working');
         let myLinkedHtml = Autolinker.Autolinker.link($(this).html(), {
             mention: false,

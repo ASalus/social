@@ -19,7 +19,6 @@
         @yield('content')
     </div>
 
-
     @stack('scripts')
 </body>
 @livewire('livewire-ui-modal')

@@ -10,7 +10,7 @@
                     <div id='testMultiple' maxlength='255'
                         class='postArea text-left bg-transparent text-gray-400 font-medium text-lg w-full overflow-y-auto h-28 break-all'
                         x-ref="postArea" placeholder="What's happening?"
-                        @input|keydown|click='content = $event.target.innerHTML;' name="postTest" wire:ignore></div>
+                        @input|keyup|click='content = $event.target.innerHTML;' name="postTest" wire:ignore></div>
                     <span contenteditable="false" class="absolute px-2 py-1 text-xs text-blueGray-600 right-2 bottom-0">
                         <div x-data="scrollProgress"
                             class="inline-flex items-center justify-center overflow-hidden rounded-full bottom-5 left-5">

@@ -21,8 +21,8 @@ class UserObserver
         $background = public_path() . '/images/bg-placeholder.jpg';
         $path = 'images/users/' . $user->username;
 
-        Storage::putFileAs('public/' . $path, $avatar, 'avatar.jpg');
-        Storage::putFileAs('public/' . $path, $background, 'background.jpg');
+        Storage::disk('public')->putFileAs($path, $avatar, 'avatar.jpg');
+        Storage::disk('public')->putFileAs($path, $background, 'background.jpg');
 
         UserInfo::create([
             'user_id' => $user->id,

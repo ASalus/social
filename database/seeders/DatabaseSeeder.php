@@ -22,18 +22,20 @@ class DatabaseSeeder extends Seeder
         $this->call(StatesTableSeeder::class);
         $this->call(CitiesTableSeeder::class);
         // \App\Models\User::factory(1)->create();
-        Role::factory()->create([
+        Role::firstOrCreate([
+            'id' => 1,
             'role_name' => 'Admin'
         ]);
-        Role::factory()->create([
+        Role::firstOrCreate([
+            'id' => 2,
             'role_name' => 'User'
         ]);
-        User::factory()->create([
+        User::firstOrCreate([
             'name' => 'Admin',
             'username' => 'admin',
-            'email' => 'asimsalus@gmail.com',
+            'email' => 'ex@gmail.com', // This data been changed for safety reason
             'role_id' => 1,
-            'password' => Hash::make('4DZUvsnde5xkN828')
+            'password' => Hash::make('12345678') // This data been changed for safety reason
         ]);
         $this->command->info('Countries tables seeded!');
     }

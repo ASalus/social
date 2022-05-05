@@ -169,11 +169,11 @@
                         </div>
                         @if (auth()->user()->id === $post->user_id)
                             <div class="flex-1 text-center">
-                                <div x-data="{ hover: false }" class="flex items-center">
+                                <div x-data="{ hover: false }" class="flex items-center"
+                                    x-on:click.stop="$wire.deleteConfirm({{ $post->id }});">
                                     <div class="tw-post-links text-gray-500 hover:bg-blue-600 hover:text-blue-600 hover:bg-opacity-50"
                                         @mouseover="hover = true" @mouseout="hover = false">
-                                        <a x-on:click.stop="$wire.deleteConfirm({{ $post->id }});"
-                                            class="hover:text-blue-600">
+                                        <a class="hover:text-blue-600">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
                                                 class="w-6 h-6 fill-current">
                                                 <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->

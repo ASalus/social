@@ -12,15 +12,9 @@ use Livewire\Component;
 class Post extends Component
 {
     protected $listeners = [
+        'btnRefresh' => '$refresh',
         "deletePost" => 'deletePost'
     ];
-
-    // public function mergeListener($id)
-    // {
-    //     $this->listeners = array_merge($this->listeners, [
-    //         "deletePost{$id}" => 'deletePost'
-    //     ]);
-    // }
 
     public function resendClick(ModelsPost $post)
     {
@@ -38,7 +32,7 @@ class Post extends Component
         }
         $userPostStat->save();
         $post->stats->save();
-        $this->emit('refreshPosts');
+        $this->emit('btnRefresh');
     }
 
     public function likeClick(ModelsPost $post)
@@ -57,7 +51,7 @@ class Post extends Component
         }
         $userPostStat->save();
         $post->stats->save();
-        $this->emit('refreshPosts');
+        $this->emit('btnRefresh');
     }
 
     public function openPostModal(ModelsPost $post)
@@ -87,16 +81,6 @@ class Post extends Component
 
     public function deleteConfirm($id)
     {
-        $this->dispatchBrowserEvent('swal:confirm', [
-            'type' => 'warning',
-            'title' => 'Are you sure?',
-            'text' => '',
-            'id' => $id
-        ]);
-    }
-
-    public function deletePost($id)
-    {
         ModelsPost::where('id', $id)->delete();
         $this->emit('refreshPosts');
     }
@@ -106,11 +90,6 @@ class Post extends Component
         $this->user = $user;
         $this->post = $post;
     }
-
-    // public function booted($post)
-    // {
-    //     $this->mergeListener($post->id);
-    // }
 
     public function render()
     {

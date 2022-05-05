@@ -55272,14 +55272,6 @@ Ensure the default browser behavior of the `hidden` attribute.
     width: 25%;
   }
 
-  .lg\:max-w-lg {
-    max-width: 32rem;
-  }
-
-  .lg\:max-w-xl {
-    max-width: 36rem;
-  }
-
   .lg\:flex-row {
     flex-direction: row;
   }
